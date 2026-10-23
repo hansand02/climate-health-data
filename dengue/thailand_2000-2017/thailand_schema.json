@@ -1,0 +1,92 @@
+{
+  "dataset": {
+    "name": "ISIMIP dengue harmonized (THA)",
+    "description": "Dengue cases with ERA5-Land climate and WorldPop population for Thailand, from chap-core's full_data.tar.gz.",
+    "country_iso3": "THA",
+    "country_name": "Thailand",
+    "admin_level": 1,
+    "admin_geojson_file": null,
+    "temporal_resolution": "monthly",
+    "time_range": {
+      "start": "2000-07",
+      "end": "2017-06"
+    },
+    "primary_key": [
+      "location",
+      "time_period"
+    ],
+    "row_count": 5916,
+    "location_count": 29,
+    "missing_disease_cases": 0.2116,
+    "created_utc": "2026-10-21T09:28:51Z",
+    "output_csv": "thailand.csv",
+    "source": {
+      "url": "https://raw.githubusercontent.com/dhis2-chap/chap-core/master/example_data/full_data.tar.gz",
+      "file": "full_data/thailand.csv"
+    },
+    "notes": "Dropped the pandas index column (first, unnamed) from the source file; otherwise unchanged. WARNING: rainfall and mean_temperature are attached to the wrong locations (ordering bug in chap-core scripts/full_dataset.py at f02e58952: zip(names, data.values()) with GEE results grouped in a different order). Proven for Vietnam (e.g. HoChiMinh has Thanh Hoa's series, January 15.5 °C). Do not use these as location-specific covariates. disease_cases and population are not affected.",
+    "schema_status": "filled; climate columns are WRONG (assigned to the wrong locations), see notes"
+  },
+  "fields": [
+    {
+      "name": "time_period",
+      "type": "string",
+      "unit": null,
+      "description": "Calendar month (YYYY-MM), built from the year and month columns of dengue_data_ISIMIP.csv.",
+      "source": {
+        "provider": "Derived",
+        "notes": "chap-core chap_core/pandas_adaptors.py get_time_period (monthly pd.Period)"
+      }
+    },
+    {
+      "name": "rainfall",
+      "type": "number",
+      "unit": "mm",
+      "description": "Total precipitation summed over the month, averaged over the admin polygon.",
+      "source": {
+        "provider": "ERA5-Land via Google Earth Engine (ECMWF/ERA5_LAND/DAILY_AGGR)",
+        "notes": "chap-core climate_health/google_earth_engine/gee_era5.py at f02e58952 (commit that added full_data.tar.gz; file later removed): daily total_precipitation_sum summed per month, polygon mean, m converted to mm; CSV median 141 mm/month Assigned to the wrong location, see dataset.notes."
+      }
+    },
+    {
+      "name": "mean_temperature",
+      "type": "number",
+      "unit": "°C",
+      "description": "Mean 2m temperature over the month (mean of daily values), averaged over the admin polygon.",
+      "source": {
+        "provider": "ERA5-Land via Google Earth Engine (ECMWF/ERA5_LAND/DAILY_AGGR)",
+        "notes": "chap-core climate_health/google_earth_engine/gee_era5.py at f02e58952 (commit that added full_data.tar.gz; file later removed): daily temperature_2m averaged per month, polygon mean, K converted to °C; CSV range 17.0 to 34.0 Assigned to the wrong location, see dataset.notes."
+      }
+    },
+    {
+      "name": "disease_cases",
+      "type": "integer",
+      "unit": "cases",
+      "description": "Reported dengue cases.",
+      "source": {
+        "provider": "ISIMIP dengue data (dengue_data_ISIMIP.csv)",
+        "notes": "Named ISIMIP_dengue_harmonized in chap_core/file_io/example_data_set.py"
+      }
+    },
+    {
+      "name": "population",
+      "type": "number",
+      "unit": "persons",
+      "description": "Population estimate for the admin unit (population_worldpop column of dengue_data_ISIMIP.csv); gaps linearly interpolated, so values are non-integer.",
+      "source": {
+        "provider": "WorldPop",
+        "notes": "Via dengue_data_ISIMIP.csv population_worldpop, renamed and gaps interpolated (np.interp) in chap-core scripts/full_dataset.py"
+      }
+    },
+    {
+      "name": "location",
+      "type": "string",
+      "unit": null,
+      "description": "Admin-1 unit name from the admin1 column of dengue_data_ISIMIP.csv, transliterated to ASCII with words capitalized and spaces removed.",
+      "source": {
+        "provider": "ISIMIP dengue data (dengue_data_ISIMIP.csv)",
+        "notes": "chap-core scripts/full_dataset.py normalize_name(); names matched to admin-1 polygons (NAME_1/VARNAME_1) for climate extraction; 29 admin-1 units, a subset of the country's provinces/states"
+      }
+    }
+  ]
+}

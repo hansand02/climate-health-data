@@ -1,0 +1,98 @@
+{
+  "dataset": {
+    "name": "Brazil dengue (chap-models/chapkit_ghr_model)",
+    "description": "Monthly notified dengue cases, population, mean temperature and drought index (scPDSI) for 11 microregions of Mato Grosso do Sul, Brazil: GHRmodel's dengue_MS data (same values as Lowe et al. 2021), from chap-models/chapkit_ghr_model.",
+    "country_iso3": "BRA",
+    "country_name": "Brazil",
+    "admin_level": 2,
+    "admin_geojson_file": null,
+    "temporal_resolution": "monthly",
+    "time_range": {
+      "start": "2001-01",
+      "end": "2019-09"
+    },
+    "primary_key": [
+      "location",
+      "time_period"
+    ],
+    "row_count": 2475,
+    "location_count": 11,
+    "missing_disease_cases": 0.0,
+    "created_utc": "2026-10-21T10:56:58Z",
+    "output_csv": "training_data.csv",
+    "source": {
+      "url": "https://raw.githubusercontent.com/chap-models/chapkit_ghr_model/11f7918ed940c99907918ce72450aa30999fe5d8/example_data/training_data.csv",
+      "repo": "https://github.com/chap-models/chapkit_ghr_model",
+      "commit": "11f7918ed940c99907918ce72450aa30999fe5d8"
+    },
+    "notes": "Made by tools/make_example_data.R in chapkit_ghr_model from GHRmodel's bundled dengue_MS (complete cases only; last 3 months, 2019-10 to 2019-12, held out as future_data.csv). Data check: all 2475 rows match Lowe et al. 2021 data/data_2000_2019.csv on micro_code and month: disease_cases = dengue_cases, population = population, pdsi = pdsi, mean_temperature = (tmax + tmin) / 2. Locations are IBGE microregion codes 50001 to 50011 (all in Mato Grosso do Sul); a microregion is a statistical group of municipalities inside a state, not an official admin level, so admin_level 2 is the closest level. No rainfall column (dengue_MS has none).",
+    "schema_status": "filled from source code/docs and data checks; not independently verified"
+  },
+  "fields": [
+    {
+      "name": "time_period",
+      "type": "string",
+      "unit": null,
+      "description": "Calendar month (YYYY-MM).",
+      "source": {
+        "provider": "Derived",
+        "notes": "make_example_data.R: format(date, '%Y-%m')."
+      }
+    },
+    {
+      "name": "location",
+      "type": "string",
+      "unit": null,
+      "description": "IBGE microregion code (5 digits).",
+      "source": {
+        "provider": "IBGE via GHRmodel dengue_MS / Lowe et al. (2021)",
+        "url": "https://github.com/drrachellowe/hydromet_dengue/blob/main/data/data_desc.csv",
+        "notes": "make_example_data.R: location = micro_code."
+      }
+    },
+    {
+      "name": "disease_cases",
+      "type": "integer",
+      "unit": "cases",
+      "description": "Notified dengue cases (SINAN) in the microregion, by month of first symptoms.",
+      "source": {
+        "provider": "SINAN / DATASUS via GHRmodel dengue_MS (Lowe et al. 2021)",
+        "url": "https://github.com/drrachellowe/hydromet_dengue/blob/main/data/data_desc.csv",
+        "notes": "make_example_data.R: disease_cases = dengue_cases. Equals Lowe dengue_cases for all rows."
+      }
+    },
+    {
+      "name": "population",
+      "type": "number",
+      "unit": "persons",
+      "description": "Estimated population of the microregion (projections from the 2000 and 2010 censuses and 2007 and 2017 counts).",
+      "source": {
+        "provider": "IBGE / DATASUS via GHRmodel dengue_MS (Lowe et al. 2021)",
+        "url": "https://github.com/drrachellowe/hydromet_dengue/blob/main/data/data_desc.csv",
+        "notes": "Lowe data_desc.csv 'population'. Equals Lowe population for all rows."
+      }
+    },
+    {
+      "name": "mean_temperature",
+      "type": "number",
+      "unit": "°C",
+      "description": "Midpoint of monthly average daily maximum and minimum temperature ((tmax + tmin) / 2), CRU TS 4.04 0.5° grid averaged over the microregion.",
+      "source": {
+        "provider": "CRU TS 4.04 via GHRmodel dengue_MS (Lowe et al. 2021)",
+        "url": "https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.04/",
+        "notes": "make_example_data.R: mean_temperature = (tmin + tmax) / 2; Lowe data_desc.csv gives tmax/tmin in °C from CRU TS 4.04. Equals Lowe (tmax + tmin) / 2 to 5e-14."
+      }
+    },
+    {
+      "name": "pdsi",
+      "type": "number",
+      "unit": null,
+      "description": "Self-calibrated Palmer Drought Severity Index, mean over the microregion (dimensionless; negative = drier than usual, positive = wetter).",
+      "source": {
+        "provider": "CRU scPDSI via GHRmodel dengue_MS (Lowe et al. 2021)",
+        "url": "https://crudata.uea.ac.uk/cru/data/drought/",
+        "notes": "Lowe data_desc.csv 'pdsi'. Equals Lowe pdsi for all rows."
+      }
+    }
+  ]
+}

@@ -5,7 +5,7 @@
     "country_iso3": "LAO",
     "country_name": "Laos",
     "admin_level": 1,
-    "admin_geojson_file": "LAO_ADM1.geojson",
+    "admin_geojson_file": "chap_LAO_admin1_monthly.geojson",
     "temporal_resolution": "monthly",
     "time_range": {
       "start": "1998-01",
@@ -15,9 +15,11 @@
       "location",
       "time_period"
     ],
-    "row_count": 2575,
+    "row_count": 2808,
     "created_utc": "2026-02-11T10:39:32Z",
-    "output_csv": "chap_LAO_admin1_monthly.csv"
+    "output_csv": "chap_LAO_admin1_monthly.csv",
+    "location_count": 18,
+    "missing_disease_cases": 0.083
   },
   "fields": [
     {
@@ -46,6 +48,27 @@
       }
     },
     {
+      "name": "disease_cases",
+      "type": "integer",
+      "unit": "cases",
+      "description": "Reported dengue cases aggregated to the time bucket and admin unit.",
+      "source": {
+        "provider": "OpenDengue",
+        "url": "https://opendengue.org/data.html"
+      }
+    },
+    {
+      "name": "population",
+      "type": "integer",
+      "unit": "persons",
+      "description": "Population estimate for the admin unit (static snapshot year applied to all time_periods).",
+      "source": {
+        "provider": "WorldPop",
+        "url": "https://www.worldpop.org/",
+        "snapshot_ref": 2020
+      }
+    },
+    {
       "name": "location_name",
       "type": "string",
       "unit": null,
@@ -59,12 +82,13 @@
     {
       "name": "rainfall",
       "type": "number",
-      "unit": "mm",
+      "unit": "mm/day",
       "description": "Total precipitation aggregated over the time bucket within the admin polygon.",
       "source": {
         "provider": "ERA5-Land (CDS)",
         "url": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land",
-        "variable": "total_precipitation"
+        "variable": "total_precipitation",
+        "notes": "Unit is mm/day (mean daily precipitation in the month): on the provinces shared with dengue/vietnam_1994-2010 (monthly totals), the ratio of the two equals the number of days in the month (median 1.03)."
       }
     },
     {
@@ -85,27 +109,6 @@
       "description": "Mean relative humidity at 2m height derived from ERA5-Land 2m temperature and 2m dewpoint temperature using the August–Roche–Magnus saturation vapor pressure formulation with constants (a=6.112 hPa, b=17.67, c=243.5 °C), applied to monthly-mean temperature and dewpoint, then aggregated to admin units.\n",
       "source": {
         "provider": "ERA5-Land (derived)"
-      }
-    },
-    {
-      "name": "disease_cases",
-      "type": "integer",
-      "unit": "cases",
-      "description": "Reported dengue cases aggregated to the time bucket and admin unit.",
-      "source": {
-        "provider": "OpenDengue",
-        "url": "https://opendengue.org/data.html"
-      }
-    },
-    {
-      "name": "population",
-      "type": "integer",
-      "unit": "persons",
-      "description": "Population estimate for the admin unit (static snapshot year applied to all time_periods).",
-      "source": {
-        "provider": "WorldPop",
-        "url": "https://www.worldpop.org/",
-        "snapshot_ref": 2020
       }
     }
   ]

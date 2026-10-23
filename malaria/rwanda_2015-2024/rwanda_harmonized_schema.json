@@ -1,0 +1,92 @@
+{
+  "dataset": {
+    "name": "Rwanda malaria (chamara7h/chamara7h.github.io)",
+    "description": "Monthly malaria cases, rainfall, mean temperature and population for 30 locations in Rwanda (likely the 30 districts), from talk slides data in chamara7h/chamara7h.github.io. Origin only described in the slides.",
+    "country_iso3": "RWA",
+    "country_name": "Rwanda",
+    "admin_level": 2,
+    "admin_geojson_file": null,
+    "temporal_resolution": "monthly",
+    "time_range": {
+      "start": "2015-01",
+      "end": "2024-12"
+    },
+    "primary_key": [
+      "location",
+      "time_period"
+    ],
+    "row_count": 3600,
+    "location_count": 30,
+    "missing_disease_cases": 0.0,
+    "created_utc": "2026-10-21T10:56:57Z",
+    "output_csv": "rwanda_harmonized.csv",
+    "source": {
+      "url": "https://raw.githubusercontent.com/chamara7h/chamara7h.github.io/164e15f6e71003cacf75bc659a2fbf9cf4685927/talks/lomsac_2026/slides/data/tidy_data/rwanda_malaria/rwanda_harmonized.csv",
+      "repo": "https://github.com/chamara7h/chamara7h.github.io",
+      "commit": "164e15f6e71003cacf75bc659a2fbf9cf4685927"
+    },
+    "notes": "Found in talk slides (LOMSAC 2026). The only provenance is the slide 'Data sources' table in talks/lomsac_2026/slides/lomsac_2026.qmd: 'DHIS2 | Malaria incidence | Rwanda (30 locations) | 2015 Jan – 2024 Dec' and 'DHIS2 Climate App | Climate covariates | All study settings'; no script that builds the file is in the repo. Locations are DHIS2-style UIDs; 30 locations equals the number of districts in Rwanda (admin 2), but the UIDs were not checked against a Rwanda DHIS2 instance. population per location changes in 2021: summed over locations it is about 24 to 28 million in 2015–2020 and about 17 to 18 million in 2021–2024, both above Rwanda's population (about 12 to 14 million), so its definition is unclear.",
+    "schema_status": "scaffold: values marked TODO are not verified"
+  },
+  "fields": [
+    {
+      "name": "time_period",
+      "type": "string",
+      "unit": null,
+      "description": "Calendar month (YYYY-MM).",
+      "source": {
+        "provider": "Derived"
+      }
+    },
+    {
+      "name": "rainfall",
+      "type": "number",
+      "unit": "mm",
+      "description": "Total precipitation over the month within the location.",
+      "source": {
+        "provider": "DHIS2 Climate App (per slides table only)",
+        "notes": "Unit from data: 3 decimals, 0.1 to 1114 per month, 840 to 3890 per year by location, as in chap-core's ERA5-Land mm output; underlying dataset (e.g. ERA5-Land or CHIRPS) not stated."
+      }
+    },
+    {
+      "name": "mean_temperature",
+      "type": "number",
+      "unit": "°C",
+      "description": "Mean air temperature over the month within the location.",
+      "source": {
+        "provider": "DHIS2 Climate App (per slides table only)",
+        "notes": "Unit from data: 2 decimals, 14.7 to 24.2; underlying dataset not stated."
+      }
+    },
+    {
+      "name": "disease_cases",
+      "type": "integer",
+      "unit": "cases",
+      "description": "Reported malaria cases per location and month.",
+      "source": {
+        "provider": "DHIS2 (Rwanda HMIS, per slides table only)",
+        "notes": "Slides say 'Malaria incidence' from DHIS2; values are counts (16 to 113356 per location-month, about 5 million per year in 2015–2017). Data element (e.g. confirmed or all cases) not stated."
+      }
+    },
+    {
+      "name": "population",
+      "type": "number",
+      "unit": null,
+      "description": "Population-like count per location, constant within a year in most cases.",
+      "source": {
+        "provider": "TODO",
+        "notes": "Not documented; national sums (24 to 28 million in 2015–2020, 17 to 18 million in 2021–2024) do not match Rwanda's population, so the unit/definition is unclear. Definition unknown: district sums are 24-28 million (2015-2020) and ~17 million (2021-2024), Rwanda has ~13 million people. Not a plain resident count."
+      }
+    },
+    {
+      "name": "location",
+      "type": "string",
+      "unit": null,
+      "description": "DHIS2 org unit UID (likely district).",
+      "source": {
+        "provider": "DHIS2 (Rwanda HMIS, per slides table only)",
+        "notes": "30 UIDs; not checked against a Rwanda DHIS2 instance."
+      }
+    }
+  ]
+}

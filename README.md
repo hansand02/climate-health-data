@@ -6,6 +6,22 @@ The datasets here are **already harmonized** (e.g. derived from OpenDengue) and 
 
 ---
 
+## Layout
+
+One dataset per folder: `<disease>/<country>_<first year>-<last year>/`, for example
+`dengue/vietnam_1998-2010/` or `malaria/rwanda_2015-2024/`. Each folder holds the CSV, a
+`<csv name>_schema.json` and, if available, a GeoJSON named like the CSV.
+
+The schema records where the data comes from, the unit of every column, and any change made to
+the source file. Read its `notes` before use.
+
+The same country can appear several times (different sources, admin levels or periods). These
+often contain the same epidemic, so do not pool them.
+
+See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) before use: several datasets have wrong climate or population.
+
+---
+
 ## CSV structure (Chap schema)
 
 All CSV files follow the same wide-table structure, with **one row per (time_period, location)**.

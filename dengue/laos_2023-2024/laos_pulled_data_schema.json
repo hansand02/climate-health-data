@@ -1,0 +1,72 @@
+{
+  "dataset": {
+    "name": "chap-core example data: laos_pulled_data",
+    "description": "Weekly suspected dengue cases per province for Laos (18 provinces, 52 weeks), pulled from a Lao DHIS2 instance, from chap-core example_data.",
+    "country_iso3": "LAO",
+    "country_name": "Laos",
+    "admin_level": 1,
+    "admin_geojson_file": "laos_pulled_data.geojson",
+    "temporal_resolution": "weekly",
+    "time_range": {
+      "start": "2023W16",
+      "end": "2024W15"
+    },
+    "primary_key": [
+      "location",
+      "time_period"
+    ],
+    "row_count": 936,
+    "location_count": 18,
+    "missing_disease_cases": 0.2447,
+    "created_utc": "2026-10-21T09:28:51Z",
+    "output_csv": "laos_pulled_data.csv",
+    "source": {
+      "url": "https://raw.githubusercontent.com/dhis2-chap/chap-core/master/example_data/laos_pulled_data.csv",
+      "geojson_url": "https://raw.githubusercontent.com/dhis2-chap/chap-core/master/example_data/small_laos_data_with_polygons.geojson"
+    },
+    "notes": "Pulled from a DHIS2 instance with the chap-core DHIS2 interface (April 2024): analytics request for data element 'IDS - Dengue Fever (Suspected cases)' (wryMP8p8k1C), org unit level qpXLDdXT3po (code comment: 'each 17 Laos provinces'), period LAST_52_WEEKS. The DHIS2 base URL is not recorded. Locations are DHIS2 org unit UIDs; the geojson names them '01 Vientiane Capital', '02 Phongsali', ... (18 provinces). No climate or population columns. Geojson copied from small_laos_data_with_polygons.geojson (ids in properties.id). Dropped the pandas index column (first, unnamed) from the source file; otherwise unchanged. Completed the location x week grid; missing weeks have empty disease_cases. The source has no zero values (minimum 1); DHIS2 analytics omits zeros, so many of the empty weeks are probably zero cases, not missing reports.",
+    "schema_status": "filled from source code/docs and data checks; not independently verified"
+  },
+  "fields": [
+    {
+      "name": "time_period",
+      "type": "string",
+      "unit": null,
+      "description": "DHIS2 weekly period id (YYYYWww).",
+      "source": {
+        "provider": "DHIS2 analytics API",
+        "notes": "Period ids as returned by DHIS2 (2023W16 to 2024W15 = LAST_52_WEEKS at pull time)."
+      }
+    },
+    {
+      "name": "disease_cases",
+      "type": "integer",
+      "unit": "cases",
+      "description": "Suspected dengue cases reported per province and week (DHIS2 data element 'IDS - Dengue Fever (Suspected cases)').",
+      "source": {
+        "provider": "DHIS2 (Lao instance, analytics API)",
+        "notes": "chap-core climate_health/dhis2_interface/ChapProgram.py and json_parsing.parse_disease_data (commit c0b483c5 and before)."
+      }
+    },
+    {
+      "name": "location",
+      "type": "string",
+      "unit": null,
+      "description": "DHIS2 org unit UID of the province.",
+      "source": {
+        "provider": "DHIS2 (Lao instance)",
+        "notes": "All 18 UIDs are ids in the geojson (properties.id)."
+      }
+    },
+    {
+      "name": "week_id",
+      "type": "number",
+      "unit": null,
+      "description": "Integer sort key for the week: year * 53 + week number (e.g. 2023W16 -> 107235).",
+      "source": {
+        "provider": "Derived",
+        "notes": "chap-core dhis2_interface/json_parsing._get_week_id: int(year) * 53 + int(week); holds for all rows."
+      }
+    }
+  ]
+}

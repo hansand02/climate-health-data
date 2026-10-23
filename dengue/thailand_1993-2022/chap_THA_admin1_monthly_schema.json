@@ -16,7 +16,10 @@
     ],
     "row_count": 27720,
     "created_utc": "2026-02-18T09:02:25Z",
-    "output_csv": "chap_THA_admin1_monthly.csv"
+    "output_csv": "chap_THA_admin1_monthly.csv",
+    "location_count": 77,
+    "missing_disease_cases": 0.0251,
+    "admin_geojson_file": "chap_THA_admin1_monthly.geojson"
   },
   "fields": [
     {
@@ -81,11 +84,12 @@
     {
       "name": "rainfall",
       "type": "number",
-      "unit": "mm",
+      "unit": "mm/day",
       "description": "Total precipitation aggregated over the time bucket within the admin polygon.",
       "source": {
         "provider": "ERA5-Land (CDS)",
-        "url": "https://cds.climate.copernicus.eu/"
+        "url": "https://cds.climate.copernicus.eu/",
+        "notes": "Unit is mm/day (mean daily precipitation in the month): on the provinces shared with dengue/vietnam_1994-2010 (monthly totals), the ratio of the two equals the number of days in the month (median 1.03)."
       }
     },
     {

@@ -1,0 +1,85 @@
+{
+  "dataset": {
+    "name": "chap-core example data: hydro_met_subset",
+    "description": "Monthly notified dengue cases and mean temperature for one Brazilian microregion (Adamantina, São Paulo), a subset of Lowe et al. (2021) data, from chap-core example_data. rainfall is a zero placeholder.",
+    "country_iso3": "BRA",
+    "country_name": "Brazil",
+    "admin_level": 2,
+    "admin_geojson_file": null,
+    "temporal_resolution": "monthly",
+    "time_range": {
+      "start": "2000-01",
+      "end": "2019-12"
+    },
+    "primary_key": [
+      "location",
+      "time_period"
+    ],
+    "row_count": 240,
+    "location_count": 1,
+    "missing_disease_cases": 0.05,
+    "created_utc": "2026-10-21T09:28:51Z",
+    "output_csv": "hydro_met_subset.csv",
+    "source": {
+      "url": "https://raw.githubusercontent.com/dhis2-chap/chap-core/master/example_data/hydro_met_subset.csv",
+      "geojson_url": null
+    },
+    "notes": "Subset of Lowe et al. 2021, Lancet Planet Health (https://github.com/drrachellowe/hydromet_dengue, data/data_2000_2019.csv) for micro_name Adamantina. Data check: all 240 months match; disease_cases equals dengue_cases (incl. the 12 missing months), mean_temperature equals (tmax + tmin) / 2. Lowe's data has no rainfall, so rainfall is 0 everywhere and is not valid data. Location is an IBGE microregion (a statistical group of municipalities inside a state, not an official admin level); admin_level 2 is the closest level (between state = 1 and municipality). No population column. Dropped the pandas index column (first, unnamed) from the source file; otherwise unchanged.",
+    "schema_status": "filled from source code/docs and data checks; not independently verified"
+  },
+  "fields": [
+    {
+      "name": "time_period",
+      "type": "string",
+      "unit": null,
+      "description": "Calendar month (YYYY-MM).",
+      "source": {
+        "provider": "Derived",
+        "notes": "From Lowe year and month columns."
+      }
+    },
+    {
+      "name": "rainfall",
+      "type": "number",
+      "unit": null,
+      "description": "Placeholder, all values 0. Not rainfall data; do not use.",
+      "source": {
+        "provider": "None (placeholder)",
+        "notes": "Lowe et al. data has no precipitation column; all 240 values are 0.0."
+      }
+    },
+    {
+      "name": "mean_temperature",
+      "type": "number",
+      "unit": "°C",
+      "description": "Midpoint of monthly average daily maximum and minimum temperature ((tmax + tmin) / 2), CRU TS 4.04 0.5° grid averaged over the microregion.",
+      "source": {
+        "provider": "CRU TS 4.04 via Lowe et al. (2021)",
+        "url": "https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.04/",
+        "notes": "data_desc.csv: tmax/tmin are monthly average daily max/min temperature (°C), CRU TS 4.04, exactextractr mean per microregion. Data check: equals (tmax + tmin) / 2 to 4e-15."
+      }
+    },
+    {
+      "name": "disease_cases",
+      "type": "integer",
+      "unit": "cases",
+      "description": "Notified dengue cases (SINAN) in the microregion, by month of first symptoms.",
+      "source": {
+        "provider": "SINAN / DATASUS via Lowe et al. (2021)",
+        "url": "https://github.com/drrachellowe/hydromet_dengue/blob/main/data/data_desc.csv",
+        "notes": "data_desc.csv: dengue_cases = notified cases in SINAN (TabNet). Data check: equals Lowe dengue_cases for all 240 months, same 12 missing."
+      }
+    },
+    {
+      "name": "location",
+      "type": "string",
+      "unit": null,
+      "description": "Microregion name (upper case).",
+      "source": {
+        "provider": "IBGE via Lowe et al. (2021)",
+        "url": "https://github.com/drrachellowe/hydromet_dengue",
+        "notes": "micro_name 'Adamantina' (IBGE microregion of São Paulo state)."
+      }
+    }
+  ]
+}

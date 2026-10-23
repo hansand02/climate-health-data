@@ -1,0 +1,94 @@
+{
+  "dataset": {
+    "name": "chap-core example data: nicaragua_weekly_data",
+    "description": "Weekly dengue cases per department for 10 Nicaraguan departments (OpenDengue, WHO/PAHO source), with raw ERA5-Land weather and a synthetic population column, from chap-core example_data.",
+    "country_iso3": "NIC",
+    "country_name": "Nicaragua",
+    "admin_level": 1,
+    "admin_geojson_file": null,
+    "temporal_resolution": "weekly",
+    "time_range": {
+      "start": "2003-12-29/2004-01-04",
+      "end": "2022-10-31/2022-11-06"
+    },
+    "primary_key": [
+      "location",
+      "time_period"
+    ],
+    "row_count": 9840,
+    "location_count": 10,
+    "missing_disease_cases": 0.0041,
+    "created_utc": "2026-10-21T09:28:51Z",
+    "output_csv": "nicaragua_weekly_data.csv",
+    "source": {
+      "url": "https://raw.githubusercontent.com/dhis2-chap/chap-core/master/example_data/nicaragua_weekly_data.csv",
+      "geojson_url": null
+    },
+    "notes": "Built by chap-core scripts/open_dengue/nicaragua.py (commit 453ae5b5). Cases are at department level (admin 1). Weather was pulled from GEE ECMWF/ERA5_LAND/DAILY_AGGR without unit conversion: mean_temperature is in K and rainfall is mean daily total precipitation in metres. The 10 kept locations are exactly the departments whose name is also a GADM 4.1 admin 2 (municipality) name; the 5 other mainland departments (Carazo, Chontales, Madriz, Nueva Segovia, Río San Juan) are missing although they exist at GADM admin 1. The script calls get_area_polygons(country, names, 2), so the weather is likely for the homonymous municipality polygon, not the whole department. population is random: 100000 + randint(1000). time_period is a Monday–Sunday week; the OpenDengue week that starts on Sunday D is the week that ends on D (6-day label shift). Dropped the pandas index column (first, unnamed) from the source file; otherwise unchanged.",
+    "schema_status": "filled from source code/docs and data checks; not independently verified"
+  },
+  "fields": [
+    {
+      "name": "time_period",
+      "type": "string",
+      "unit": null,
+      "description": "Week as 'YYYY-MM-DD/YYYY-MM-DD' (Monday to Sunday).",
+      "source": {
+        "provider": "Derived",
+        "notes": "From OpenDengue calendar_start_date (a Sunday) via chap_core Week; data check: the OpenDengue week starting on Sunday D matches the row whose week ends on D."
+      }
+    },
+    {
+      "name": "rainfall",
+      "type": "number",
+      "unit": "m",
+      "description": "Mean daily total precipitation over the week (ERA5-Land total_precipitation_sum, mean of daily images, then spatial mean over the polygon), not converted to mm. Multiply by 7 for a weekly total.",
+      "source": {
+        "provider": "ERA5-Land daily aggregates via Google Earth Engine (ECMWF/ERA5_LAND/DAILY_AGGR)",
+        "notes": "scripts/open_dengue/nicaragua.py uses gee_era5(..., ['temperature_2m', 'total_precipitation_sum']); gee_raw.fetch_single_period applies collection.mean() then reduceRegions(mean) with no converter. Data: 3e-7 to 0.077, yearly sum of weekly values 0.16 to 0.24, i.e. about 1.1 to 1.7 m/year after x7. Per the code at 453ae5b5 the mean covers Mon-Sat (6 days: GEE filterDate end is exclusive), so x7 is only an approximate weekly total."
+      }
+    },
+    {
+      "name": "mean_temperature",
+      "type": "number",
+      "unit": "K",
+      "description": "Mean 2m air temperature over the week within the polygon (ERA5-Land temperature_2m), not converted to °C.",
+      "source": {
+        "provider": "ERA5-Land daily aggregates via Google Earth Engine (ECMWF/ERA5_LAND/DAILY_AGGR)",
+        "notes": "Same code path as rainfall, no kelvin_to_celsium conversion. Data: 290.7 to 305.0. Per the code at 453ae5b5 the mean covers Mon-Sat (6 days: GEE filterDate end is exclusive), so x7 is only an approximate weekly total."
+      }
+    },
+    {
+      "name": "disease_cases",
+      "type": "integer",
+      "unit": "cases",
+      "description": "Reported dengue cases per department and week (OpenDengue dengue_total).",
+      "source": {
+        "provider": "OpenDengue V1.2.2 (WHO/PAHO)",
+        "url": "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.2.2/Temporal_extract_V1_2_2.zip",
+        "notes": "All 9800 non-empty values equal OpenDengue V1.2.2 dengue_total for NICARAGUA, S_res Admin1, T_res Week (UUIDs WHOPAHO-NIC-20042022-W01-*), after the 6-day week label shift."
+      }
+    },
+    {
+      "name": "population",
+      "type": "number",
+      "unit": null,
+      "description": "Synthetic placeholder, not real population: random integers in [100000, 101000). Do not use.",
+      "source": {
+        "provider": "Synthetic (chap-core script)",
+        "notes": "scripts/open_dengue/nicaragua.py: joined['population'] = 100000 + np.random.randint(1000, size=len(joined)). Data: 100000 to 100999."
+      }
+    },
+    {
+      "name": "location",
+      "type": "string",
+      "unit": null,
+      "description": "Department name, lower case (chap-core normalize_name of OpenDengue adm_1_name).",
+      "source": {
+        "provider": "OpenDengue V1.2.2",
+        "url": "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.2.2/Temporal_extract_V1_2_2.zip",
+        "notes": "Normalised from adm_1_name."
+      }
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "dataset": {
+    "name": "chap-core example data: vietnam_monthly",
+    "description": "Monthly dengue cases per province for Vietnam (OpenDengue, Project Tycho source), with rainfall, mean temperature and a static population column, from chap-core example_data.",
+    "country_iso3": "VNM",
+    "country_name": "Vietnam",
+    "admin_level": 1,
+    "admin_geojson_file": "vietnam_monthly.geojson",
+    "temporal_resolution": "monthly",
+    "time_range": {
+      "start": "1994-02",
+      "end": "2010-12"
+    },
+    "primary_key": [
+      "location",
+      "time_period"
+    ],
+    "row_count": 11571,
+    "location_count": 57,
+    "missing_disease_cases": 0.0559,
+    "created_utc": "2026-10-21T09:28:51Z",
+    "output_csv": "vietnam_monthly.csv",
+    "source": {
+      "url": "https://raw.githubusercontent.com/dhis2-chap/chap-core/master/example_data/vietnam_monthly.csv",
+      "geojson_url": "https://raw.githubusercontent.com/dhis2-chap/chap-core/master/example_data/vietnam_monthly.geojson"
+    },
+    "notes": "Geojson feature ids are the location names. Dropped the pandas index column (first, unnamed) from the source file; otherwise unchanged. Locations are 57 of OpenDengue's 64 Admin1 units (missing: HA NOI CITY, HO CHI MINH CITY, HAI PHONG CITY, DA NANG CITY, CAN THO CITY, THUA THIEN - HUE, HA TAY). Origin of the climate and population columns and of the geojson is not documented in chap-core (added in commit 9da8dad3, 'feature: vietnam dataset').",
+    "schema_status": "scaffold: values marked TODO are not verified"
+  },
+  "fields": [
+    {
+      "name": "time_period",
+      "type": "string",
+      "unit": null,
+      "description": "Calendar month (YYYY-MM).",
+      "source": {
+        "provider": "Derived",
+        "notes": "Month of OpenDengue calendar_start_date."
+      }
+    },
+    {
+      "name": "rainfall",
+      "type": "number",
+      "unit": "mm",
+      "description": "Total precipitation over the month within the province.",
+      "source": {
+        "provider": "ERA5-Land via Google Earth Engine (chap-core pipeline)",
+        "notes": "Not documented. Values have 3 decimals and monthly magnitudes (0.2 to 1063, mean 169) that match chap-core's GEE ERA5-Land converter (meter_to_mm: round(m*1000, 3), monthly sum of daily totals), but no script links this file to it. Series identical to the chap-core ERA5-Land output in full_data vietnam.csv; correlation >= 0.99 with dengue/vietnam_1998-2010."
+      }
+    },
+    {
+      "name": "mean_temperature",
+      "type": "number",
+      "unit": "°C",
+      "description": "Mean 2m air temperature over the month within the province.",
+      "source": {
+        "provider": "ERA5-Land via Google Earth Engine (chap-core pipeline)",
+        "notes": "Not documented. Values have 2 decimals and range 8.7 to 30.6, matching chap-core's GEE ERA5-Land converter (kelvin_to_celsium: round(K-273.15, 2)), but no script links this file to it. Series identical to the chap-core ERA5-Land output in full_data vietnam.csv; correlation >= 0.99 with dengue/vietnam_1998-2010."
+      }
+    },
+    {
+      "name": "disease_cases",
+      "type": "integer",
+      "unit": "cases",
+      "description": "Reported dengue cases per province and month (OpenDengue dengue_total).",
+      "source": {
+        "provider": "OpenDengue V1.2.2 (Project Tycho)",
+        "url": "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.2.2/Temporal_extract_V1_2_2.zip",
+        "notes": "All 10924 non-empty values equal OpenDengue V1.2.2 dengue_total for adm_0_name 'VIET NAM', S_res Admin1, T_res Month; all rows have UUID TYCHO-ALL-19242017-SV_DF01-00. chap-core scripts/explorations/temporal_downsampling.py wrote vietnam_monthly.csv from OpenDengueDataSet().subset('Viet nam', 'Admin1', 'Month')."
+      }
+    },
+    {
+      "name": "population",
+      "type": "number",
+      "unit": "persons",
+      "description": "Population per province, one static value for all months.",
+      "source": {
+        "provider": "TODO",
+        "notes": "Not documented. One constant value per location (sum 71.3 million over 57 provinces), so a count of persons; source and reference year unknown. WRONG for QUANG NINH (1437) and KHANH HOA (2922), real ~1.2 million each; PHU THO is 42% of the value in dengue/vietnam_1998-2010. Cause unknown."
+      }
+    },
+    {
+      "name": "location",
+      "type": "string",
+      "unit": null,
+      "description": "Province name as in OpenDengue adm_1_name (upper case).",
+      "source": {
+        "provider": "OpenDengue V1.2.2",
+        "url": "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.2.2/Temporal_extract_V1_2_2.zip",
+        "notes": "Names equal OpenDengue adm_1_name."
+      }
+    }
+  ]
+}

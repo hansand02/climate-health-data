@@ -1,0 +1,107 @@
+{
+  "dataset": {
+    "name": "Madagascar malaria (chap-models/XGBoost_for_Malawi)",
+    "description": "Monthly malaria cases in children under 5 for 21 health centres (CSB) in Ifanadiana district, Madagascar, with rainfall, temperature and a bed-net timing covariate, from the PIVOT PRIDE-C project via chap-models/XGBoost_for_Malawi.",
+    "country_iso3": "MDG",
+    "country_name": "Madagascar",
+    "admin_level": null,
+    "admin_geojson_file": null,
+    "temporal_resolution": "monthly",
+    "time_range": {
+      "start": "2016-07",
+      "end": "2022-12"
+    },
+    "primary_key": [
+      "location",
+      "time_period"
+    ],
+    "row_count": 1638,
+    "location_count": 21,
+    "missing_disease_cases": 0.0464,
+    "created_utc": "2026-10-21T10:56:58Z",
+    "output_csv": "trainData.csv",
+    "source": {
+      "url": "https://raw.githubusercontent.com/chap-models/XGBoost_for_Malawi/b0e826bf18fbad0bc5233d0b69f6f310045774fe/input/trainData.csv",
+      "repo": "https://github.com/chap-models/XGBoost_for_Malawi",
+      "commit": "b0e826bf18fbad0bc5233d0b69f6f310045774fe"
+    },
+    "notes": "Repo is named Malawi but the data is Madagascar. The file is the same as chap-models/Madagascar_ARIMA input/trainData.csv, made by its data_preparation.R from PRIDE-C malaria-u5-modelData.csv (https://gitlab.com/pivot-dev/PRIDE-C/pridec-model, data/for-model/csb-cases/): csb -> location, n_palu -> disease_cases, rain_mm -> rainfall, temp_c -> mean_temperature, net_time added, kept 2016-07 to 2022-12. Data check: all 1638 rows match that source file (age_class u5) exactly. Locations are CSB (Centre de Santé de Base) catchments made of fokontany (PRIDE-C csb_catchment_secto); these are health facility areas, not an admin level, so admin_level is TODO. population is a placeholder of 1. admin_level is null: locations are health-centre (CSB) catchments, not admin units. PRIDE-C has a real pop column (~600-1300 per CSB, likely under-5) that could replace the placeholder 1.",
+    "schema_status": "scaffold: values marked TODO are not verified"
+  },
+  "fields": [
+    {
+      "name": "location",
+      "type": "string",
+      "unit": null,
+      "description": "Health centre (CSB) name; values are the CSB catchment areas.",
+      "source": {
+        "provider": "PIVOT PRIDE-C",
+        "url": "https://gitlab.com/pivot-dev/PRIDE-C/pridec-model",
+        "notes": "PRIDE-C column csb."
+      }
+    },
+    {
+      "name": "time_period",
+      "type": "string",
+      "unit": null,
+      "description": "Calendar month (YYYY-MM).",
+      "source": {
+        "provider": "Derived",
+        "notes": "From PRIDE-C date (first of month)."
+      }
+    },
+    {
+      "name": "disease_cases",
+      "type": "integer",
+      "unit": "cases",
+      "description": "Malaria cases in children under 5 recorded in the CSB registers, per CSB catchment and month.",
+      "source": {
+        "provider": "PIVOT PRIDE-C (CSB register data)",
+        "url": "https://gitlab.com/pivot-dev/PRIDE-C/pridec-model",
+        "notes": "PRIDE-C n_palu, age_class 'u5'; scripts/adj-incidence/01_clean-data/01_health-data/01_clean-csb-register-data.R aggregates malaria cases from the CSB registers. Equals source for all rows."
+      }
+    },
+    {
+      "name": "rainfall",
+      "type": "number",
+      "unit": "mm",
+      "description": "Monthly precipitation from ARC2, averaged over the fokontany of the CSB catchment.",
+      "source": {
+        "provider": "ARC2 via PIVOT PRIDE-C",
+        "url": "https://gitlab.com/pivot-dev/PRIDE-C/pridec-model",
+        "notes": "PRIDE-C rain_mm from data/env-dynamic/from-smaller/precip-arc2.csv ('precipitation from ARC2' in 01_historic-env-dynamic.R); xx_create-model-dataset.R averages fokontany values per CSB. Data: 0 to 507, about a quarter of values are 0."
+      }
+    },
+    {
+      "name": "mean_temperature",
+      "type": "number",
+      "unit": "°C",
+      "description": "Average monthly temperature from MODIS land surface temperature, averaged over the fokontany of the CSB catchment.",
+      "source": {
+        "provider": "MODIS LST via PIVOT PRIDE-C",
+        "url": "https://gitlab.com/pivot-dev/PRIDE-C/pridec-model",
+        "notes": "PRIDE-C temp_c from data/env-dynamic/from-smaller/tempc-modis.csv; 01_historic-env-dynamic.R: 'temp_c : average monthly temperature in C' (section 'Temperature from MODIS LST'). Data: 15.8 to 27.5."
+      }
+    },
+    {
+      "name": "net_time",
+      "type": "number",
+      "unit": "years",
+      "description": "Time since the last mass bed-net distribution campaign (campaigns assumed on 2015-08-01, 2018-08-01 and 2021-08-01): (days since campaign + 1) / 365.",
+      "source": {
+        "provider": "Derived (Madagascar_ARIMA data_preparation.R)",
+        "notes": "Formula in chap-models/Madagascar_ARIMA data_preparation.R; reproduces all values to 5e-15."
+      }
+    },
+    {
+      "name": "population",
+      "type": "number",
+      "unit": null,
+      "description": "Placeholder, all values 1. Not population data; do not use.",
+      "source": {
+        "provider": "None (placeholder)",
+        "notes": "Madagascar_ARIMA README: 'CHAP currently also requires a population column so I added a population column filled with ones'. All values are 1."
+      }
+    }
+  ]
+}
